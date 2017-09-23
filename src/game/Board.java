@@ -7,6 +7,7 @@ public class Board {
 	private int[] safeSquares;
 	public Board() {
 		square = new Square[60];
+		for(int i=0;i<60;i++) square[i]=new Square();
 		safeSquares = new int[8];
 		safeSquares[0] = 1;
 		safeSquares[1] = 9;
