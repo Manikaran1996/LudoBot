@@ -16,28 +16,41 @@ public class Main {
 		int playerId = Integer.parseInt(initialMessage[0]);
 		int timeLimit = Integer.parseInt(initialMessage[1]);
 		int gameMode = Integer.parseInt(initialMessage[2]);
-		char color = ' ';
-		Color c = Color.RED;
+		Piece[] me, opponent;
+		me = new Piece[4];
+		opponent = new Piece[4];
+		Color myColor = Color.RED, opponentColor;
 		if(gameMode == 0) {
 			if(playerId == 1) {
-				color = 'R';
-				c = Color.RED;
+				myColor = Color.RED;
+				opponentColor = Color.YELLOW;
 			}
 			else {
-				color = 'Y';
-				c = Color.YELLOW;
+				myColor = Color.YELLOW;
+				opponentColor = Color.RED;
 			}
+			
 		}
-		if(gameMode == 1) {
+		else {
 			if(playerId == 1) {
-				color = 'B';
-				c = Color.BLUE;
+				myColor = Color.BLUE;
+				opponentColor = Color.GREEN;
 			}
 			else {
-				color = 'G';
-				c = Color.GREEN;
+				myColor = Color.GREEN;
+				opponentColor = Color.BLUE;
 			}
 		}
+		initializePieces(me, myColor);
+		initializePieces(opponent, opponentColor);
+		
+		//adding pieces on to board
+		
+		for(int i=0;i<4;i++) {
+			board.addPiece(me[i], 0);
+			board.addPiece(opponent[i], 0);
+		}
+		
 		if(playerId == 1) {
 			System.out.println("<THROW>");
 			String diceMessage = sc.nextLine();
@@ -49,7 +62,7 @@ public class Main {
 				diceValues.add(Integer.parseInt(msg[i]));
 			}
 			System.err.println("Dice Throw Received (D) : " + diceValues);
-			System.out.println(createMove(c, 0, diceValues.get(0)));
+			System.out.println(createMove(myColor, 0, diceValues.get(0)));
 			// Make Move
 			// print move on STDOUT
 		}
@@ -86,5 +99,12 @@ public class Main {
 		builder.append("_"+move);
 		return builder.toString();
 		
+	}
+	
+	private static void initializePieces(Piece[] p , Color c) {
+		for(int i=0;i<p.length;i++) {
+			p[i].setId(i);
+			p[i].setColor(c);
+		}
 	}
 }

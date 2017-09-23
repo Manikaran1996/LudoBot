@@ -27,6 +27,10 @@ public class Board {
 		square[loc].addPiece(new Piece(loc, c, id));
 	}
 	
+	void addPiece(Piece p, int loc) {
+		square[loc].addPiece(p);
+	}
+	
 	//TODO add the logic when one piece cuts other piece of different colour
 	boolean movePiece(int from, int to) {
 		if(square[from] == null)

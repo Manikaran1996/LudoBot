@@ -5,6 +5,10 @@ public class Piece {
 	private int location;
 	private int id;
 	
+	public Piece() {
+		location = 0;
+	}
+	
 	public Piece(int loc, Color c, int id) {
 		clr = c;
 		location = loc;
@@ -23,8 +27,15 @@ public class Piece {
 		location = loc;
 	}
 	
-	public int getPieceId() {
+	public int getId() {
 		return id;
 	}
 	
+	public void setColor(Color c) {
+		clr = c;
+	}
+	
+	public void setId(int id) {
+		
+	}
 }
