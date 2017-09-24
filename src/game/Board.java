@@ -47,7 +47,11 @@ public class Board {
 			return false;
 		}
 		int currentLocation = p.getLocationOnBoard();
+		// TODO - new location should take into account from 52 to 1
 		int newLocation = currentLocation + number;
+		/* if(newLocation > 52) {
+			newLocation -= 52;
+		} */
 		ArrayList<Piece> piecesAtNewLoc = square[newLocation].getPieces();
 		//If there is not piece at new location then simply move
 		if(piecesAtNewLoc.size() == 0) {

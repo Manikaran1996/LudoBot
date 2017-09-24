@@ -51,29 +51,49 @@ public class Main {
 			board.addPiece(opponent[i], 0);
 		}
 		
-		if(playerId == 1) {
-			System.out.println("<THROW>");
-			String diceMessage = sc.nextLine();
-			String[] msg = diceMessage.split(" ");
-			// msg[0] = "YOU"
-			// msg[1] = "ROLLED"
-			ArrayList<Integer> diceValues = new ArrayList<>();
-			for(int i=2;i<msg.length;i++) {
-				diceValues.add(Integer.parseInt(msg[i]));
+		boolean myTurn = false;
+		if(playerId == 1)
+			myTurn = true;
+		
+		while(!(hasWon(me) || hasWon(opponent))) {
+			if(myTurn) {
+				System.out.println("<THROW>");
+				String diceMessage = sc.nextLine();
+				String[] msg = diceMessage.split(" ");
+				// msg[0] = "YOU"
+				// msg[1] = "ROLLED"
+				ArrayList<Integer> diceValues = new ArrayList<>();
+				for(int i=2;i<msg.length;i++) {
+					diceValues.add(Integer.parseInt(msg[i]));
+				}
+				// Make Move
+				// print move on STDOUT
+				System.err.println("Dice Throw Received (D) : " + diceValues);
+				System.out.println(createMove(myColor, 0, diceValues.get(0)));
+				myTurn = false;
 			}
-			System.err.println("Dice Throw Received (D) : " + diceValues);
-			System.out.println(createMove(myColor, 0, diceValues.get(0)));
-			// Make Move
-			// print move on STDOUT
-		}
-		else {
-			String player1Dice = sc.nextLine();
-			System.err.println("Player1 Dice : " + player1Dice);
-			String player1Move = sc.nextLine();
-			System.err.println("Player1 Move : " + player1Move);
-			/*String diceMessage = sc.nextLine();
-			String moveMessage = sc.nextLine();
-			System.err.println("Player1 devi : " + initialMessage[0]); */
+			else {
+				String diceMessage = sc.nextLine();
+				if(diceMessage.equals("REPEAT")) {
+					myTurn = true;
+					continue;
+				}
+				//System.err.println("Player1 Dice : " + player1Dice);
+				String opponentMoveMessage = sc.nextLine();
+				//System.err.println("Player1 Move : " + player1Move);
+				
+				// executing move
+				String[] moves = opponentMoveMessage.split("<next>");
+				for(String str:moves) {
+					int pieceId = Integer.parseInt(String.valueOf(str.charAt(1)));
+					int move = Integer.parseInt(String.valueOf(str.charAt(3)));
+					board.movePiece(opponent[pieceId], move);
+				}
+				myTurn = true;
+				/*String diceMessage = sc.nextLine();
+				String moveMessage = sc.nextLine();
+				System.err.println("Player1 devi : " + initialMessage[0]); */
+			}
 		}
 		sc.close();
 		
@@ -103,8 +123,20 @@ public class Main {
 	
 	private static void initializePieces(Piece[] p , Color c) {
 		for(int i=0;i<p.length;i++) {
-			p[i].setId(i);
-			p[i].setColor(c);
+			p[i] = new Piece(0, c, i);
 		}
 	}
+	
+	private static boolean hasWon(Piece[] p) {
+		boolean won = true;
+		for(int i=0;i<p.length;i++) {
+			if(p[i].getLocationOnBoard() != 58) {
+				won = false;
+				break;
+			}
+		}
+		return won;
+	}
+	
+	
 }
