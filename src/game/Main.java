@@ -84,12 +84,16 @@ public class Main {
 				
 				// executing move
 				String[] moves = opponentMoveMessage.split("<next>");
+				myTurn = true;
 				for(String str:moves) {
+					if(str.equals("REPEAT")) {
+						myTurn = false;
+						break;
+					}
 					int pieceId = Integer.parseInt(String.valueOf(str.charAt(1)));
 					int move = Integer.parseInt(String.valueOf(str.charAt(3)));
 					board.movePiece(opponent[pieceId], move);
 				}
-				myTurn = true;
 				/*String diceMessage = sc.nextLine();
 				String moveMessage = sc.nextLine();
 				System.err.println("Player1 devi : " + initialMessage[0]); */
@@ -99,7 +103,7 @@ public class Main {
 		
 	}
 	
-	private static String createMove(Color c, int id, int move) {
+	public static String createMove(Color c, int id, int move) {
 		StringBuilder builder = new StringBuilder();
 		switch(c) {
 		case RED:

@@ -5,6 +5,11 @@ import java.util.ArrayList;
 public class Board {
 	private Square[] square;
 	private int[] safeSquares;
+	private int redStartLocation = 1;
+	private int yellowStartLocation = 27 ;
+	private int greenStartLocation = 14;
+	private int blueStartLocation = 40;
+	
 	public Board() {
 		square = new Square[60];
 		for(int i=0;i<60;i++) square[i]=new Square();
@@ -31,15 +36,7 @@ public class Board {
 	void addPiece(Piece p, int loc) {
 		square[loc].addPiece(p);
 	}
-	
-	//TODO add the logic when one piece cuts other piece of different colour
-	boolean movePiece(int from, int to) {
-		if(square[from] == null)
-			return false;
-		square[to] = square[from];
-		square[from] = null;
-		return true;
-	}
+
 	
 	boolean movePiece(Piece p, int number) {
 		boolean legal = checkIfMoveIsLegal(p, number);
@@ -47,17 +44,36 @@ public class Board {
 			return false;
 		}
 		int currentLocation = p.getLocationOnBoard();
-		// TODO - new location should take into account from 52 to 1
-		int newLocation = currentLocation + number;
-		/* if(newLocation > 52) {
-			newLocation -= 52;
-		} */
+		int relativePosition = p.getRelativePosition();
+		Color c = p.getColor();
+		int newLocation = 0;
+		if(relativePosition + number < 52) {
+			newLocation = currentLocation + number;
+			if(c != Color.RED) {
+				if(newLocation > 52) {
+					newLocation = newLocation - 52;
+				}
+			}
+			relativePosition += number;
+		}
+		else if(relativePosition < 52 && relativePosition + number >= 52) {
+			newLocation = relativePosition + number + 1;
+			relativePosition += number + 1;
+		}
+		else if(relativePosition >= 52) {
+			// TODO - CHECK
+			// updation of relative position is also to be handled
+			newLocation = relativePosition + number;
+			relativePosition += number;
+		}
+		
 		ArrayList<Piece> piecesAtNewLoc = square[newLocation].getPieces();
 		//If there is not piece at new location then simply move
 		if(piecesAtNewLoc.size() == 0) {
 			square[currentLocation].removePiece(p);
 			p.changeLocationTo(newLocation);
 			square[newLocation].addPiece(p);
+			p.setRelativePosition(relativePosition);
 		}
 		else {
 			// If there is a piece at new location then it could either be the 
@@ -70,6 +86,7 @@ public class Board {
 					p.changeLocationTo(newLocation);
 					square[currentLocation].removePiece(p);
 					square[newLocation].addPiece(p);
+					p.setRelativePosition(relativePosition);
 					return true;
 				}
 				else if(temp.getColor() == p.getColor()) //blockEd
@@ -80,6 +97,7 @@ public class Board {
 					square[newLocation].addPiece(p);
 					temp.changeLocationTo(0);
 					square[0].addPiece(temp);
+					p.setRelativePosition(relativePosition);
 					return true;
 				}
 			}
@@ -104,6 +122,42 @@ public class Board {
 				return true;
 		}
 		return false;
+	}
+	
+	public String randomMove(Piece[] piece, int dice) {
+		for(Piece p : piece) {
+			if(p.getLocationOnBoard() != 0) {
+				boolean moved = movePiece(p, dice);
+				if(moved) {
+					return Main.createMove(p.getColor(), p.getId(), dice);
+				}
+			}
+		}
+		if(dice == 1 || dice == 6) {
+			square[0].removePiece(piece[0]);
+			piece[0].setRelativePosition(1);
+			switch(piece[0].getColor()) {
+			case RED:
+				piece[0].changeLocationTo(redStartLocation);
+				square[redStartLocation].addPiece(piece[0]);
+				break;
+			case BLUE:
+				piece[0].changeLocationTo(blueStartLocation);
+				square[blueStartLocation].addPiece(piece[0]);
+				break;
+			case GREEN:
+				piece[0].changeLocationTo(greenStartLocation);
+				square[greenStartLocation].addPiece(piece[0]);
+				break;
+			case YELLOW:
+				piece[0].changeLocationTo(yellowStartLocation);
+				square[yellowStartLocation].addPiece(piece[0]);
+				break;
+			}
+			return Main.createMove(piece[0].getColor(), piece[0].getId(), dice);
+		}
+		return "NA";
+		
 	}
 	
 }
