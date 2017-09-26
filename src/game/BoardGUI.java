@@ -2,6 +2,8 @@ package game;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -13,7 +15,7 @@ public class BoardGUI extends JPanel {
 	/**
 	 * 
 	 */
-	private static final int MAX_WIDTH=900;
+	public static final int MAX_WIDTH=900;
 	private static final int SQ_SIZE = MAX_WIDTH/15;
 	private static final int PAWN_RAD=(9*SQ_SIZE)/10;
 	//custom colors
@@ -32,8 +34,10 @@ public class BoardGUI extends JPanel {
 	private int win_safe_locations[][][];
 	private static final long serialVersionUID = 1L;
 	BufferedImage boardImage;
+	//BufferedImage tempImage;
 	public BoardGUI() {
 		boardImage=new BufferedImage(MAX_WIDTH, MAX_WIDTH, BufferedImage.TYPE_INT_RGB);
+		//tempImage=new BufferedImage(MAX_WIDTH, MAX_WIDTH, BufferedImage.TYPE_INT_RGB);
 		createMapping();
 		init();
 	}
@@ -94,6 +98,7 @@ public class BoardGUI extends JPanel {
 				g.drawRect(6*SQ_SIZE+SQ_SIZE*j, 9*SQ_SIZE+SQ_SIZE*i, SQ_SIZE, SQ_SIZE);
 			}
 		}
+		//tempImage=deepCopy(boardImage);
 	}
 	private int colorToType(game.Color c) {
 		int type=0;
@@ -201,46 +206,75 @@ public class BoardGUI extends JPanel {
 		
 	}
 	public void update(Board board) {
+		//BufferedImage tempImage=deepCopy(boardImage);
+		init();
 		Graphics g=boardImage.getGraphics();
 		
 		for(int i=0;i<=58;i++) {
 			ArrayList<Piece> pieces=board.getPiecesAtLocation(i);
-			if(i==0 || i==58) {
-				int rc=0,gc=0,yc=0,bc=0;
+			if(i==0 || i>=53) {
+				ArrayList<Piece> rc=new ArrayList<>();
+				ArrayList<Piece> bc=new ArrayList<>();
+				ArrayList<Piece> yc=new ArrayList<>();
+				ArrayList<Piece> gc=new ArrayList<>();
 				for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
 					Piece piece = (Piece) iterator.next();
 					game.Color type=piece.getColor();
 					switch (type) {
-					case RED: rc++;
+					case RED: rc.add(piece);
 						break; 
-					case BLUE: bc++; 
+					case BLUE: bc.add(piece); 
 					break;
-					case YELLOW: yc++; 
+					case YELLOW: yc.add(piece); 
 						break;
-					case GREEN:gc++; 
+					case GREEN:gc.add(piece); 
 						break;
 					default:
 						break;
 					}
 				}
 				if(i==0) {
-					drawHomeSquare(g, 0, rc);
-					drawHomeSquare(g, 1, gc);
-					drawHomeSquare(g, 2, yc);
-					drawHomeSquare(g, 3, bc);
+					drawHomeSquare(g, 0, rc.size());
+					drawHomeSquare(g, 1, gc.size());
+					drawHomeSquare(g, 2, yc.size());
+					drawHomeSquare(g, 3, bc.size());
+				}
+				else if(i==58){
+					drawWinningSquare(g, game.Color.RED, rc.size());
+					drawWinningSquare(g, game.Color.GREEN, gc.size());
+					drawWinningSquare(g, game.Color.YELLOW, yc.size());
+					drawWinningSquare(g, game.Color.BLUE, bc.size());
 				}
 				else {
-					drawWinningSquare(g, game.Color.RED, rc);
-					drawWinningSquare(g, game.Color.GREEN, gc);
-					drawWinningSquare(g, game.Color.YELLOW, yc);
-					drawWinningSquare(g, game.Color.BLUE, bc);
+					g.setColor(pawn_red);
+					drawPawn(g, win_safe_locations[0][i-53][0], win_safe_locations[0][i-53][1], rc);
+					g.setColor(pawn_green);
+					drawPawn(g, win_safe_locations[1][i-53][0], win_safe_locations[1][i-53][1], gc);
+					g.setColor(pawn_yellow);
+					drawPawn(g, win_safe_locations[2][i-53][0], win_safe_locations[2][i-53][1], yc);
+					g.setColor(pawn_blue);
+					drawPawn(g, win_safe_locations[3][i-53][0], win_safe_locations[3][i-53][1], bc);
+					
 				}
 			}
 			else if(pieces.size()!=0){
-				int type=colorToType(pieces.get(0).getColor());
-				g.setColor(colors[type]);
-				if(i>=53)drawPawn(g, win_safe_locations[type][i-53][0], win_safe_locations[type][i-53][1], pieces);
-				else drawPawn(g, square_locations[i][0], square_locations[i][1], pieces);
+				/*if(i>=53) {
+					ArrayList<Piece>color_wise_pieces[]=new ArrayList<Piece> [4];
+					color_wise_pieces[0]=new ArrayList<>();
+					color_wise_pieces[1]=new ArrayList<>();
+					color_wise_pieces[2]=new ArrayList<>();
+					color_wise_pieces[3]=new ArrayList<>();
+					for (Iterator<Piece> iterator = pieces.iterator(); iterator
+							.hasNext();) {
+						Piece piece = (Piece) iterator.next();
+						color_wise_pieces[colorToType(piece.getColor())].add(piece);
+					}
+					for(int j=0;i<4;i++) {
+					g.setColor(colors[j]);
+					drawPawn(g, win_safe_locations[i][i-53][0], win_safe_locations[i][i-53][1], pieces);
+					}
+				}
+				else*/ drawPawn(g, square_locations[i][0], square_locations[i][1], pieces);
 			}
 		}
 		repaint();
@@ -258,10 +292,16 @@ public class BoardGUI extends JPanel {
 		gm.addPiece(p,0);
 		board.update(gm);
 		for(int i=1;i<=58;i++) {
-			Thread.currentThread().sleep(500);
+			//Thread.currentThread().sleep(500);
 			gm.putPieceAt(i, game.Color.RED, 0);
 			board.update(gm);
 		}
 		
 	}
+	static BufferedImage deepCopy(BufferedImage bi) {
+		 ColorModel cm = bi.getColorModel();
+		 boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+		 WritableRaster raster = bi.copyData(null);
+		 return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+		}
 }
