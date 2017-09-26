@@ -13,7 +13,7 @@ public class Board {
 	public Board() {
 		square = new Square[60];
 		for(int i=0;i<60;i++) square[i]=new Square();
-		safeSquares = new int[8];
+		safeSquares = new int[14];
 		safeSquares[0] = 1;
 		safeSquares[1] = 9;
 		safeSquares[2] = 14;
@@ -22,6 +22,12 @@ public class Board {
 		safeSquares[5] = 35;
 		safeSquares[6] = 40;
 		safeSquares[7] = 48;
+		safeSquares[8] = 53;
+		safeSquares[9] = 54;
+		safeSquares[10] = 55;
+		safeSquares[11] = 56;
+		safeSquares[12] = 57;
+		safeSquares[13] = 58;
 	}
 	ArrayList<Piece> getPiecesAtLocation(int x) {
 		if(x < 60)
@@ -44,6 +50,7 @@ public class Board {
 			return false;
 		}
 		int currentLocation = p.getLocationOnBoard();
+		System.err.println("Bot: currentLocation " + currentLocation);
 		int relativePosition = p.getRelativePosition();
 		Color c = p.getColor();
 		int newLocation = 0;
@@ -108,7 +115,7 @@ public class Board {
 	
 	boolean checkIfMoveIsLegal(Piece p, int number) {
 		int currentLocation = p.getLocationOnBoard();
-		if(currentLocation == 0 && (number != 1 || number != 6 ))
+		if(currentLocation == 0 && (number != 1 && number != 6 ))
 			return false;
 		if(currentLocation + number > 58)
 			return false;
@@ -117,7 +124,7 @@ public class Board {
 	
 	
 	boolean isASafeSquare(int position) {
-		for(int i=0;i<8;i++) {
+		for(int i=0;i<14;i++) {
 			if(safeSquares[i] == position)
 				return true;
 		}
@@ -129,35 +136,45 @@ public class Board {
 			if(p.getLocationOnBoard() != 0) {
 				boolean moved = movePiece(p, dice);
 				if(moved) {
+					System.err.println("Bot : " + p.getLocationOnBoard() + " " + p.getRelativePosition());
 					return Main.createMove(p.getColor(), p.getId(), dice);
 				}
 			}
 		}
 		if(dice == 1 || dice == 6) {
-			square[0].removePiece(piece[0]);
-			piece[0].setRelativePosition(1);
-			switch(piece[0].getColor()) {
+			int i=0;
+			while(i<4 && piece[i].getLocationOnBoard() >= 58) {
+				i++;
+			}
+			if(i==4)
+				return "NA";
+			square[i].removePiece(piece[i]);
+			piece[i].setRelativePosition(1);
+			switch(piece[i].getColor()) {
 			case RED:
-				piece[0].changeLocationTo(redStartLocation);
-				square[redStartLocation].addPiece(piece[0]);
+				piece[i].changeLocationTo(redStartLocation);
+				square[redStartLocation].addPiece(piece[i]);
 				break;
 			case BLUE:
-				piece[0].changeLocationTo(blueStartLocation);
-				square[blueStartLocation].addPiece(piece[0]);
+				piece[i].changeLocationTo(blueStartLocation);
+				square[blueStartLocation].addPiece(piece[i]);
 				break;
 			case GREEN:
-				piece[0].changeLocationTo(greenStartLocation);
-				square[greenStartLocation].addPiece(piece[0]);
+				piece[i].changeLocationTo(greenStartLocation);
+				square[greenStartLocation].addPiece(piece[i]);
 				break;
 			case YELLOW:
-				piece[0].changeLocationTo(yellowStartLocation);
-				square[yellowStartLocation].addPiece(piece[0]);
+				piece[i].changeLocationTo(yellowStartLocation);
+				square[yellowStartLocation].addPiece(piece[i]);
 				break;
 			}
-			return Main.createMove(piece[0].getColor(), piece[0].getId(), dice);
+			return Main.createMove(piece[i].getColor(), piece[i].getId(), 1);
 		}
 		return "NA";
 		
 	}
 	
+	public void opponentMove(Piece p, int number) {
+		int currLocation = p.getLocationOnBoard();
+	}
 }
