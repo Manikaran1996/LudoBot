@@ -212,42 +212,69 @@ public class BoardGUI extends JPanel {
 		
 		for(int i=0;i<=58;i++) {
 			ArrayList<Piece> pieces=board.getPiecesAtLocation(i);
-			if(i==0 || i==58) {
-				int rc=0,gc=0,yc=0,bc=0;
+			if(i==0 || i>=53) {
+				ArrayList<Piece> rc=new ArrayList<>();
+				ArrayList<Piece> bc=new ArrayList<>();
+				ArrayList<Piece> yc=new ArrayList<>();
+				ArrayList<Piece> gc=new ArrayList<>();
 				for (Iterator<Piece> iterator = pieces.iterator(); iterator.hasNext();) {
 					Piece piece = (Piece) iterator.next();
 					game.Color type=piece.getColor();
 					switch (type) {
-					case RED: rc++;
+					case RED: rc.add(piece);
 						break; 
-					case BLUE: bc++; 
+					case BLUE: bc.add(piece); 
 					break;
-					case YELLOW: yc++; 
+					case YELLOW: yc.add(piece); 
 						break;
-					case GREEN:gc++; 
+					case GREEN:gc.add(piece); 
 						break;
 					default:
 						break;
 					}
 				}
 				if(i==0) {
-					drawHomeSquare(g, 0, rc);
-					drawHomeSquare(g, 1, gc);
-					drawHomeSquare(g, 2, yc);
-					drawHomeSquare(g, 3, bc);
+					drawHomeSquare(g, 0, rc.size());
+					drawHomeSquare(g, 1, gc.size());
+					drawHomeSquare(g, 2, yc.size());
+					drawHomeSquare(g, 3, bc.size());
+				}
+				else if(i==58){
+					drawWinningSquare(g, game.Color.RED, rc.size());
+					drawWinningSquare(g, game.Color.GREEN, gc.size());
+					drawWinningSquare(g, game.Color.YELLOW, yc.size());
+					drawWinningSquare(g, game.Color.BLUE, bc.size());
 				}
 				else {
-					drawWinningSquare(g, game.Color.RED, rc);
-					drawWinningSquare(g, game.Color.GREEN, gc);
-					drawWinningSquare(g, game.Color.YELLOW, yc);
-					drawWinningSquare(g, game.Color.BLUE, bc);
+					g.setColor(pawn_red);
+					drawPawn(g, win_safe_locations[0][i-53][0], win_safe_locations[0][i-53][1], rc);
+					g.setColor(pawn_green);
+					drawPawn(g, win_safe_locations[1][i-53][0], win_safe_locations[1][i-53][1], gc);
+					g.setColor(pawn_yellow);
+					drawPawn(g, win_safe_locations[2][i-53][0], win_safe_locations[2][i-53][1], yc);
+					g.setColor(pawn_blue);
+					drawPawn(g, win_safe_locations[3][i-53][0], win_safe_locations[3][i-53][1], bc);
+					
 				}
 			}
 			else if(pieces.size()!=0){
-				int type=colorToType(pieces.get(0).getColor());
-				g.setColor(colors[type]);
-				if(i>=53)drawPawn(g, win_safe_locations[type][i-53][0], win_safe_locations[type][i-53][1], pieces);
-				else drawPawn(g, square_locations[i][0], square_locations[i][1], pieces);
+				/*if(i>=53) {
+					ArrayList<Piece>color_wise_pieces[]=new ArrayList<Piece> [4];
+					color_wise_pieces[0]=new ArrayList<>();
+					color_wise_pieces[1]=new ArrayList<>();
+					color_wise_pieces[2]=new ArrayList<>();
+					color_wise_pieces[3]=new ArrayList<>();
+					for (Iterator<Piece> iterator = pieces.iterator(); iterator
+							.hasNext();) {
+						Piece piece = (Piece) iterator.next();
+						color_wise_pieces[colorToType(piece.getColor())].add(piece);
+					}
+					for(int j=0;i<4;i++) {
+					g.setColor(colors[j]);
+					drawPawn(g, win_safe_locations[i][i-53][0], win_safe_locations[i][i-53][1], pieces);
+					}
+				}
+				else*/ drawPawn(g, square_locations[i][0], square_locations[i][1], pieces);
 			}
 		}
 		repaint();
