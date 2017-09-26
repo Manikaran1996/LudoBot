@@ -62,13 +62,34 @@ public class Main {
 				String[] msg = diceMessage.split(" ");
 				// msg[0] = "YOU"
 				// msg[1] = "ROLLED"
+				if(diceMessage.equals("YOU ROLLED 3 SIXES, AND THUS A DUCK")) {
+					System.out.println("NA");
+					myTurn = false;
+					continue;
+				}
 				ArrayList<Integer> diceValues = new ArrayList<>();
 				for(int i=2;i<msg.length;i++) {
 					diceValues.add(Integer.parseInt(msg[i]));
 				}
-				
-				String move = board.randomMove(me, diceValues.get(0));
-				
+				//System.err.println(diceValues);
+				String move = "";
+				String temp = board.randomMove(me, diceValues.get(0));
+				if(!temp.equals("NA")) {
+					move += temp;
+				}
+				for(int i=1;i<diceValues.size();i++) {
+					temp = board.randomMove(me, diceValues.get(i));
+					if(!temp.equals("NA")) {
+						if(move.length() != 0)
+							move = move + "<next>" + temp;
+						else
+							move += temp;
+					}
+				}
+				if(move.length() == 0) {
+					move = "NA";
+				}
+					
 				// Make Move
 				// print move on STDOUT
 				//System.out.println(createMove(myColor, 0, diceValues.get(0)));
@@ -77,14 +98,27 @@ public class Main {
 			}
 			else {
 				String diceMessage = sc.nextLine();
+				System.err.println("Dice Message : " + diceMessage);
+				if(diceMessage.equals("YOU ROLLED 3 SIXES, AND THUS A DUCK")) {
+					myTurn = true;
+					continue;
+				}
 				if(diceMessage.equals("REPEAT")) {
 					myTurn = true;
 					continue;
 				}
 				//System.err.println("Player1 Dice : " + player1Dice);
-				String opponentMoveMessage = sc.nextLine();
-				//System.err.println("Player1 Move : " + player1Move);
-				
+				String opponentMoveMessage = "";
+				if(sc.hasNextLine()) 
+					opponentMoveMessage = sc.nextLine();
+				else {
+					break;
+				}
+				//System.err.println("Player1 Move : " + opponentMoveMessage);
+				if(opponentMoveMessage.equals("NA")) {
+					myTurn = true;
+					continue;
+				}
 				// executing move
 				String[] moves = opponentMoveMessage.split("<next>");
 				myTurn = true;
@@ -103,13 +137,13 @@ public class Main {
 				String moveMessage = sc.nextLine();
 				System.err.println("Player1 devi : " + initialMessage[0]); */
 			}
-			/*System.err.println("Positions : ");
+			System.err.println("Positions : ");
 			for(int i=0;i<4;i++)
-				System.err.print(me[i].getLocationOnBoard() + "  ");
+				System.err.print(me[i].getRelativePosition() + "  ");
 			System.err.println();
 			for(int i=0;i<4;i++)
-				System.err.print(opponent[i].getLocationOnBoard() + "  ");
-			System.err.println();*/
+				System.err.print(opponent[i].getRelativePosition() + "  ");
+			System.err.println(); 
 		}
 		sc.close();
 		

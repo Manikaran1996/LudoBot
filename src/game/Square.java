@@ -18,13 +18,17 @@ public class Square {
 	}
 
 	public void removePiece(Piece p) {
-		int size = pieces.size();
-		for(int i = 0; i<size;i++) {
+		int size = pieces.size() , i;
+		for(i = 0; i<size;i++) {
 			Piece temp = pieces.get(i);
 			if(temp.getColor() == p.getColor()) {
-				pieces.remove(i);
 				break;
 			}
 		}
+		pieces.remove(i);
+	}
+	
+	public String toString() {
+		return pieces.toString();
 	}
 }

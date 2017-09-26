@@ -75,8 +75,12 @@ public class Board {
 		}
 		
 		ArrayList<Piece> piecesAtNewLoc = square[newLocation].getPieces();
+		/*for(int i=0;i<square.length;i++) {
+			System.err.println(square[i]);
+		}*/
 		//If there is not piece at new location then simply move
 		if(piecesAtNewLoc.size() == 0) {
+			System.err.println(p.getColor() + " Moving to Empty square");
 			square[currentLocation].removePiece(p);
 			p.changeLocationTo(newLocation);
 			p.setRelativePosition(relativePosition);
@@ -90,19 +94,24 @@ public class Board {
 			Piece temp = piecesAtNewLoc.get(0);
 			if(temp != null) {
 				if(isASafeSquare(newLocation)) {
-					p.changeLocationTo(newLocation);
+					System.err.println(p.getColor() + " Moving to safe square");
+					System.err.println(newLocation);
 					square[currentLocation].removePiece(p);
-
+					p.changeLocationTo(newLocation);
 					p.setRelativePosition(relativePosition);
 					square[newLocation].addPiece(p);
 					return true;
 				}
-				else if(temp.getColor() == p.getColor()) //blockEd
+				else if(temp.getColor() == p.getColor()) { //blockEd 
+					System.err.println(p.getColor() + " Block-ed may form");
 					return false;
+				}
 				else if(temp.getColor() != p.getColor()) {
+					System.err.println(p.getColor() + " cut and moved ");
 					square[newLocation].removePiece(temp);
 					p.changeLocationTo(newLocation);
 					p.setRelativePosition(relativePosition);
+					square[currentLocation].removePiece(p);
 					square[newLocation].addPiece(p);
 					temp.changeLocationTo(0);
 					square[0].addPiece(temp);
@@ -110,7 +119,6 @@ public class Board {
 				}
 			}
 		}
-			
 		return true;
 	}
 	
@@ -133,6 +141,36 @@ public class Board {
 	}
 	
 	public String randomMove(Piece[] piece, int dice) {
+		if(dice == 1 || dice == 6) {
+			int i=0;
+			while(i<4 && piece[i].getRelativePosition() != 0) {
+				i++;
+			}
+			if(i < 4) {
+				System.err.println(piece[i].getColor() + " Making piece alive " + i + " location : " + piece[i].getLocationOnBoard());
+				square[0].removePiece(piece[i]);
+				piece[i].setRelativePosition(1);
+				switch(piece[i].getColor()) {
+				case RED:
+					piece[i].changeLocationTo(redStartLocation);
+					square[redStartLocation].addPiece(piece[i]);
+					break;
+				case BLUE:
+					piece[i].changeLocationTo(blueStartLocation);
+					square[blueStartLocation].addPiece(piece[i]);
+					break;
+				case GREEN:
+					piece[i].changeLocationTo(greenStartLocation);
+					square[greenStartLocation].addPiece(piece[i]);
+					break;
+				case YELLOW:
+					piece[i].changeLocationTo(yellowStartLocation);
+					square[yellowStartLocation].addPiece(piece[i]);
+					break;
+				}
+				return Main.createMove(piece[i].getColor(), piece[i].getId(), dice);
+			}
+		}
 		for(Piece p : piece) {
 			if(p.getLocationOnBoard() != 0) {
 				boolean moved = movePiece(p, dice);
@@ -144,7 +182,7 @@ public class Board {
 		}
 		if(dice == 1 || dice == 6) {
 			int i=0;
-			while(i<4 && piece[i].getLocationOnBoard() >= 58) {
+			while(i<4 && piece[i].getLocationOnBoard() != 0) {
 				i++;
 			}
 			if(i==4)
@@ -169,7 +207,7 @@ public class Board {
 				square[yellowStartLocation].addPiece(piece[i]);
 				break;
 			}
-			return Main.createMove(piece[i].getColor(), piece[i].getId(), 1);
+			return Main.createMove(piece[i].getColor(), piece[i].getId(), dice);
 		}
 		return "NA";
 		
@@ -177,7 +215,7 @@ public class Board {
 	
 	public boolean opponentMove(Piece p, int number) {
 		int currLocation = p.getLocationOnBoard();
-		if(currLocation == 0 && number == 1) {
+		if(currLocation == 0 && (number == 1 || number == 6)) {
 			square[0].removePiece(p);
 			p.setRelativePosition(1);
 			switch(p.getColor()) {

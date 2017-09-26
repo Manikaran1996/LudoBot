@@ -45,7 +45,12 @@ public class Piece {
 		clr = c;
 	}
 	
-	public void setId(int id) {
-		
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(clr + " ");
+		builder.append("\nId : " + id + " ");
+		builder.append("\nLocation : " + location);
+		builder.append("Relative Position : " + relativePosition);
+		return builder.toString();
 	}
 }
