@@ -71,7 +71,6 @@ public class Main {
 				
 				// Make Move
 				// print move on STDOUT
-				System.err.println(move + " " );
 				//System.out.println(createMove(myColor, 0, diceValues.get(0)));
 				System.out.println(move);
 				myTurn = false;
@@ -96,20 +95,21 @@ public class Main {
 					}
 					int pieceId = Integer.parseInt(String.valueOf(str.charAt(1)));
 					int move = Integer.parseInt(String.valueOf(str.charAt(3)));
-					boolean result= board.movePiece(opponent[pieceId], move);
-					System.err.println("opponent " + result);
+					boolean result= board.opponentMove(opponent[pieceId], move);
+					//System.err.println("opponent " + result);
 					
 				}
 				/*String diceMessage = sc.nextLine();
 				String moveMessage = sc.nextLine();
 				System.err.println("Player1 devi : " + initialMessage[0]); */
 			}
+			/*System.err.println("Positions : ");
 			for(int i=0;i<4;i++)
-				System.err.print(me[i].getRelativePosition() + "  ");
+				System.err.print(me[i].getLocationOnBoard() + "  ");
 			System.err.println();
 			for(int i=0;i<4;i++)
-				System.err.print(opponent[i].getRelativePosition() + "  ");
-			System.err.println();
+				System.err.print(opponent[i].getLocationOnBoard() + "  ");
+			System.err.println();*/
 		}
 		sc.close();
 		
