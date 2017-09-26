@@ -2,6 +2,8 @@ package game;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -13,7 +15,7 @@ public class BoardGUI extends JPanel {
 	/**
 	 * 
 	 */
-	private static final int MAX_WIDTH=900;
+	public static final int MAX_WIDTH=900;
 	private static final int SQ_SIZE = MAX_WIDTH/15;
 	private static final int PAWN_RAD=(9*SQ_SIZE)/10;
 	//custom colors
@@ -32,8 +34,10 @@ public class BoardGUI extends JPanel {
 	private int win_safe_locations[][][];
 	private static final long serialVersionUID = 1L;
 	BufferedImage boardImage;
+	//BufferedImage tempImage;
 	public BoardGUI() {
 		boardImage=new BufferedImage(MAX_WIDTH, MAX_WIDTH, BufferedImage.TYPE_INT_RGB);
+		//tempImage=new BufferedImage(MAX_WIDTH, MAX_WIDTH, BufferedImage.TYPE_INT_RGB);
 		createMapping();
 		init();
 	}
@@ -94,6 +98,7 @@ public class BoardGUI extends JPanel {
 				g.drawRect(6*SQ_SIZE+SQ_SIZE*j, 9*SQ_SIZE+SQ_SIZE*i, SQ_SIZE, SQ_SIZE);
 			}
 		}
+		//tempImage=deepCopy(boardImage);
 	}
 	private int colorToType(game.Color c) {
 		int type=0;
@@ -201,6 +206,8 @@ public class BoardGUI extends JPanel {
 		
 	}
 	public void update(Board board) {
+		//BufferedImage tempImage=deepCopy(boardImage);
+		init();
 		Graphics g=boardImage.getGraphics();
 		
 		for(int i=0;i<=58;i++) {
@@ -258,10 +265,16 @@ public class BoardGUI extends JPanel {
 		gm.addPiece(p,0);
 		board.update(gm);
 		for(int i=1;i<=58;i++) {
-			Thread.currentThread().sleep(500);
+			//Thread.currentThread().sleep(500);
 			gm.putPieceAt(i, game.Color.RED, 0);
 			board.update(gm);
 		}
 		
 	}
+	static BufferedImage deepCopy(BufferedImage bi) {
+		 ColorModel cm = bi.getColorModel();
+		 boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+		 WritableRaster raster = bi.copyData(null);
+		 return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+		}
 }
