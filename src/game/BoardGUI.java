@@ -42,6 +42,7 @@ public class BoardGUI extends JPanel {
 		init();
 	}
 	public void paint(Graphics g) {
+		//System.err.println("Painting ");
 		g.drawImage(boardImage,10, 10, this);
 	}
 	public void init() {
@@ -288,14 +289,16 @@ public class BoardGUI extends JPanel {
 		frame.setSize(BoardGUI.MAX_WIDTH+20,BoardGUI.MAX_WIDTH+20);
 		frame.setVisible(true);
 		Board gm=new Board();
-		Piece p=new Piece(0,game.Color.RED,0);
-		gm.addPiece(p,0);
+		gm.addPiece(new Piece(58,game.Color.YELLOW,0),0);
+		gm.addPiece(new Piece(58,game.Color.YELLOW,1),0);
+		gm.addPiece(new Piece(31,game.Color.YELLOW,2),38);
+		gm.addPiece(new Piece(11,game.Color.YELLOW,3),0);
+		gm.addPiece(new Piece(58,game.Color.RED,1),0);
+		gm.addPiece(new Piece(38,game.Color.RED,2),0);
+		gm.addPiece(new Piece(11,game.Color.RED,3),0);
+		gm.addPiece(new Piece(51,game.Color.RED,0),0);
 		board.update(gm);
-		for(int i=1;i<=58;i++) {
-			//Thread.currentThread().sleep(500);
-			gm.putPieceAt(i, game.Color.RED, 0);
-			board.update(gm);
-		}
+		
 		
 	}
 	static BufferedImage deepCopy(BufferedImage bi) {

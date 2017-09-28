@@ -77,12 +77,12 @@ public class Main {
 				}
 				//System.err.println(diceValues);
 				String move = "";
-				String temp = board.randomMove(me, diceValues.get(0));
-				if(!temp.equals("NA")) {
+				String temp =  board.mixedStrategy(me, diceValues.get(0)); //board.randomMove(me, diceValues.get(0));
+ 				if(!temp.equals("NA")) {
 					move += temp;
 				}
 				for(int i=1;i<diceValues.size();i++) {
-					temp = board.randomMove(me, diceValues.get(i));
+					temp =   board.mixedStrategy(me, diceValues.get(i)); //board.randomMove(me, diceValues.get(0));
 					if(!temp.equals("NA")) {
 						if(move.length() != 0)
 							move = move + "<next>" + temp;
@@ -149,6 +149,13 @@ public class Main {
 			System.err.println();
 			for(int i=0;i<4;i++)
 				System.err.print(opponent[i].getRelativePosition() + "  ");
+			System.err.println(); 
+	
+			for(int i=0;i<4;i++)
+				System.err.print(me[i].getLocationOnBoard() + "  ");
+			System.err.println();
+			for(int i=0;i<4;i++)
+				System.err.print(opponent[i].getLocationOnBoard() + "  ");
 			System.err.println(); 
 		}
 		sc.close();

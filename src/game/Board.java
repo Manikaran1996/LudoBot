@@ -1,6 +1,9 @@
 package game;
 
 import java.util.ArrayList;
+import java.util.Collections;
+
+import sun.swing.plaf.synth.Paint9Painter.PaintType;
 
 public class Board {
 	private Square[] square;
@@ -114,6 +117,7 @@ public class Board {
 					square[currentLocation].removePiece(p);
 					square[newLocation].addPiece(p);
 					temp.changeLocationTo(0);
+					temp.setRelativePosition(0);
 					square[0].addPiece(temp);
 					return true;
 				}
@@ -128,6 +132,10 @@ public class Board {
 			return false;
 		if(currentLocation + number > 58)
 			return false;
+		int newLocation=getNewLocation(p, number);
+		ArrayList<Piece> pieces=square[newLocation].getPieces();
+		//blockade
+		if(pieces.size()!=0 && (!isASafeSquare(newLocation)) && pieces.get(0).getColor()==p.getColor()) return false; // no blockade
 		return true;
 	}
 	
@@ -215,6 +223,8 @@ public class Board {
 	
 	public boolean opponentMove(Piece p, int number) {
 		int currLocation = p.getLocationOnBoard();
+		System.err.println("Current location : "+ currLocation + " " + number + " of id = "+p.getId());
+		
 		if(currLocation == 0 && (number == 1 || number == 6)) {
 			square[0].removePiece(p);
 			p.setRelativePosition(1);
@@ -266,5 +276,53 @@ public class Board {
 			relativePosition += number;
 		}
 		return newLocation;
+	}
+	public String mixedStrategy(Piece piece[],int dice) {
+		if(dice == 1 || dice == 6) {
+			int i=0;
+			while(i<4 && piece[i].getRelativePosition() != 0) {
+				i++;
+			}
+			if(i < 4) {
+				System.err.println(piece[i].getColor() + " Making piece alive " + i + " location : " + piece[i].getLocationOnBoard());
+				square[0].removePiece(piece[i]);
+				piece[i].setRelativePosition(1);
+				switch(piece[i].getColor()) {
+				case RED:
+					piece[i].changeLocationTo(redStartLocation);
+					square[redStartLocation].addPiece(piece[i]);
+					break;
+				case BLUE:
+					piece[i].changeLocationTo(blueStartLocation);
+					square[blueStartLocation].addPiece(piece[i]);
+					break;
+				case GREEN:
+					piece[i].changeLocationTo(greenStartLocation);
+					square[greenStartLocation].addPiece(piece[i]);
+					break;
+				case YELLOW:
+					piece[i].changeLocationTo(yellowStartLocation);
+					square[yellowStartLocation].addPiece(piece[i]);
+					break;
+				}
+				return Main.createMove(piece[i].getColor(), piece[i].getId(), dice);
+			}
+		}
+		int index=Strategy.defensiveStrategy(this, piece, dice);
+		if(index!=-1) {
+			movePiece(piece[index], dice);
+			return Main.createMove(piece[index].getColor(), piece[index].getId(), dice);
+		}/*
+		index=Strategy.aggressiveStrategy(this, piece, dice);
+		if(index!=-1) {
+			movePiece(piece[index], dice);
+			return Main.createMove(piece[index].getColor(), piece[index].getId(), dice);
+		}
+		index=Strategy.fastStrategy(this, piece, dice);
+		if(index!=-1) {
+			movePiece(piece[index], dice);
+			return Main.createMove(piece[index].getColor(), piece[index].getId(), dice);
+		}*/
+		return randomMove(piece, dice);
 	}
 }
