@@ -1,5 +1,6 @@
 package game;
 
+import java.lang.management.MemoryType;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -12,6 +13,7 @@ public class Main {
 		BoardGUI gui=new BoardGUI();
 		Scanner sc = new Scanner(System.in);
 		String details = sc.nextLine();
+		System.err.println("NUmber of args : "+args.length);
 		String[] initialMessage = details.split(" ");
 		System.err.println("Player ID : " + initialMessage[0]);
 		System.err.println("Time Limit : " + initialMessage[1]);
@@ -46,7 +48,7 @@ public class Main {
 		}
 		initializePieces(me, myColor);
 		initializePieces(opponent, opponentColor);
-		initializeGUI(gui);
+		if(args.length==0) initializeGUI(gui);
 		
 		//adding pieces on to board
 		
@@ -54,12 +56,20 @@ public class Main {
 			board.addPiece(me[i], 0);
 			board.addPiece(opponent[i], 0);
 		}
-		gui.update(board);
+		if(args.length==0) gui.update(board);
 		boolean myTurn = false;
 		if(playerId == 1)
 			myTurn = true;
 		
 		while(!(hasWon(me) || hasWon(opponent))) {
+			Piece old_me[]=new Piece[4];
+			Piece old_opponent[]=new Piece[4];
+			for(int i=0;i<4;i++) {
+				old_me[i]=new Piece(me[i].getLocationOnBoard(),me[i].getColor(),me[i].getId());
+				old_me[i].setRelativePosition(me[i].getRelativePosition());
+				old_opponent[i]=new Piece(opponent[i].getLocationOnBoard(),opponent[i].getColor(),opponent[i].getId());
+				old_opponent[i].setRelativePosition(opponent[i].getRelativePosition());
+			}
 			if(myTurn) {
 				System.out.println("<THROW>");
 				String diceMessage = sc.nextLine();
@@ -98,7 +108,7 @@ public class Main {
 				// print move on STDOUT
 				//System.out.println(createMove(myColor, 0, diceValues.get(0)));
 				System.out.println(move);
-				gui.update(board);
+				if(args.length==0) gui.update(board);
 				myTurn = false;
 			}
 			else {
@@ -135,7 +145,7 @@ public class Main {
 					int pieceId = Integer.parseInt(String.valueOf(str.charAt(1)));
 					int move = Integer.parseInt(String.valueOf(str.charAt(3)));
 					boolean result= board.opponentMove(opponent[pieceId], move);
-					gui.update(board);
+					if(args.length==0)gui.update(board);
 					//System.err.println("opponent " + result);
 					
 				}

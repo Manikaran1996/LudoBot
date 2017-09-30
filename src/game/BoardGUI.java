@@ -6,7 +6,9 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.PrimitiveIterator.OfDouble;
 
+import javax.sound.midi.SysexMessage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -28,10 +30,13 @@ public class BoardGUI extends JPanel {
 	private Color pawn_yellow=new Color(204,204,0);
 	private Color pawn_blue=new Color(0,0,153);
 	Color colors[]={pawn_red,pawn_green,pawn_yellow,pawn_blue};
+	Color board_colors[]={board_red,board_green,board_yellow,board_blue};
+	private int home_corners[][];
 	private int home_locations[][];
 	private int winning_locations[][];
 	private int square_locations[][];
 	private int win_safe_locations[][][];
+	private int counts[];
 	private static final long serialVersionUID = 1L;
 	BufferedImage boardImage;
 	//BufferedImage tempImage;
@@ -112,6 +117,7 @@ public class BoardGUI extends JPanel {
 		return type;
 	}
 	private void createMapping() {
+		home_corners=new int [][] {{0,0},{9*SQ_SIZE,0},{9*SQ_SIZE,9*SQ_SIZE},{0,9*SQ_SIZE}};
 		home_locations=new int[][] {{(3*SQ_SIZE)/2,(3*SQ_SIZE)/2},{(21*SQ_SIZE)/2,(3*SQ_SIZE)/2},{(21*SQ_SIZE)/2,(21*SQ_SIZE)/2},{(3*SQ_SIZE)/2,(21*SQ_SIZE)/2}};
 		winning_locations=new int[][] {{6*SQ_SIZE,7*SQ_SIZE},{7*SQ_SIZE,6*SQ_SIZE},{8*SQ_SIZE,7*SQ_SIZE},{7*SQ_SIZE,8*SQ_SIZE}};
 		win_safe_locations=new int[4][5][2];
@@ -155,7 +161,8 @@ public class BoardGUI extends JPanel {
 			square_locations[37+i][1]=14*SQ_SIZE;
 			
 		}
-		
+		counts=new int[60];
+		for(int i=0;i<=58;i++) counts[i]=0;
 	}
 	private void drawPawn(Graphics g,int x,int y) {
 		x=x+SQ_SIZE/2-PAWN_RAD/2;
@@ -182,6 +189,10 @@ public class BoardGUI extends JPanel {
 		}
 	}
 	private void drawHomeSquare(Graphics g,int type,int cnt) {
+		g.setColor(board_colors[type]);
+		g.fillRect(home_corners[type][0], home_corners[type][1], 6*SQ_SIZE, 6*SQ_SIZE);
+		g.setColor(Color.black);
+		g.drawRect(home_corners[type][0], home_corners[type][1], 6*SQ_SIZE, 6*SQ_SIZE);
 		Color color=colors[type];
 		int top=home_locations[type][0];
 		int left=home_locations[type][1];
@@ -206,13 +217,19 @@ public class BoardGUI extends JPanel {
 		drawPawn(g, top, left, arrayList);
 		
 	}
-	public void update(Board board) {
-		//BufferedImage tempImage=deepCopy(boardImage);
-		init();
+	public void redraw(Graphics g,int x,int y,ArrayList<Piece> p,Color back) {
+		g.setColor(back);
+		g.fillRect(x, y, SQ_SIZE, SQ_SIZE);
+		g.setColor(Color.black);
+		g.drawRect(x,y,SQ_SIZE,SQ_SIZE);
+		drawPawn(g, x, y, p);
+	}
+	public void update ( Board board) {
 		Graphics g=boardImage.getGraphics();
-		
 		for(int i=0;i<=58;i++) {
 			ArrayList<Piece> pieces=board.getPiecesAtLocation(i);
+			if(counts[i]==pieces.size()) continue;
+			counts[i]=pieces.size();
 			if(i==0 || i>=53) {
 				ArrayList<Piece> rc=new ArrayList<>();
 				ArrayList<Piece> bc=new ArrayList<>();
@@ -247,38 +264,23 @@ public class BoardGUI extends JPanel {
 					drawWinningSquare(g, game.Color.BLUE, bc.size());
 				}
 				else {
-					g.setColor(pawn_red);
-					drawPawn(g, win_safe_locations[0][i-53][0], win_safe_locations[0][i-53][1], rc);
-					g.setColor(pawn_green);
-					drawPawn(g, win_safe_locations[1][i-53][0], win_safe_locations[1][i-53][1], gc);
-					g.setColor(pawn_yellow);
-					drawPawn(g, win_safe_locations[2][i-53][0], win_safe_locations[2][i-53][1], yc);
-					g.setColor(pawn_blue);
-					drawPawn(g, win_safe_locations[3][i-53][0], win_safe_locations[3][i-53][1], bc);
+					redraw(g, win_safe_locations[0][i-53][0], win_safe_locations[0][i-53][1], rc,board_colors[0]);
+					redraw(g, win_safe_locations[1][i-53][0], win_safe_locations[1][i-53][1], gc,board_colors[1]);
+					redraw(g, win_safe_locations[2][i-53][0], win_safe_locations[2][i-53][1], yc,board_colors[2]);
+					redraw(g, win_safe_locations[3][i-53][0], win_safe_locations[3][i-53][1], bc,board_colors[3]);
 					
 				}
 			}
-			else if(pieces.size()!=0){
-				/*if(i>=53) {
-					ArrayList<Piece>color_wise_pieces[]=new ArrayList<Piece> [4];
-					color_wise_pieces[0]=new ArrayList<>();
-					color_wise_pieces[1]=new ArrayList<>();
-					color_wise_pieces[2]=new ArrayList<>();
-					color_wise_pieces[3]=new ArrayList<>();
-					for (Iterator<Piece> iterator = pieces.iterator(); iterator
-							.hasNext();) {
-						Piece piece = (Piece) iterator.next();
-						color_wise_pieces[colorToType(piece.getColor())].add(piece);
-					}
-					for(int j=0;i<4;i++) {
-					g.setColor(colors[j]);
-					drawPawn(g, win_safe_locations[i][i-53][0], win_safe_locations[i][i-53][1], pieces);
-					}
-				}
-				else*/ drawPawn(g, square_locations[i][0], square_locations[i][1], pieces);
+			else {
+				if(i==1 || i == 9) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_red); 
+				else if(i==14 || i==22) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_green);
+				else if(i==27 || i==35) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_yellow);
+				else if(i==40 || i==48) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_blue);
+				else redraw(g, square_locations[i][0], square_locations[i][1], pieces, Color.white);
 			}
 		}
 		repaint();
+		
 	}
 	public static void main(String args[] ) throws InterruptedException {
 		JFrame frame=new JFrame();
