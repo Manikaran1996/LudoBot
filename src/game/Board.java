@@ -1,9 +1,6 @@
 package game;
 
 import java.util.ArrayList;
-import java.util.Collections;
-
-import sun.swing.plaf.synth.Paint9Painter.PaintType;
 
 public class Board {
 	private Square[] square;

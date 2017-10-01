@@ -1,6 +1,5 @@
 package game;
 
-import java.lang.management.MemoryType;
 import java.util.ArrayList;
 import java.util.Scanner;
 

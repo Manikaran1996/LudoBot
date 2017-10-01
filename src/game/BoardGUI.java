@@ -6,9 +6,6 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.PrimitiveIterator.OfDouble;
-
-import javax.sound.midi.SysexMessage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
