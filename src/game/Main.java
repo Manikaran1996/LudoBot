@@ -21,6 +21,7 @@ public class Main {
 		int playerId = Integer.parseInt(initialMessage[0]);
 		int timeLimit = Integer.parseInt(initialMessage[1]);
 		int gameMode = Integer.parseInt(initialMessage[2]);
+		int showGUI = Integer.parseInt(initialMessage[3]);
 		Piece[] me, opponent;
 		me = new Piece[4];
 		opponent = new Piece[4];
@@ -48,7 +49,7 @@ public class Main {
 		}
 		initializePieces(me, myColor);
 		initializePieces(opponent, opponentColor);
-		if(args.length==0) initializeGUI(gui);
+		if(showGUI==0) initializeGUI(gui,playerId);
 		
 		//adding pieces on to board
 		
@@ -56,7 +57,7 @@ public class Main {
 			board.addPiece(me[i], 0);
 			board.addPiece(opponent[i], 0);
 		}
-		if(args.length==0) gui.update(board);
+		if(showGUI==0) gui.update(board);
 		boolean myTurn = false;
 		if(playerId == 1)
 			myTurn = true;
@@ -108,7 +109,7 @@ public class Main {
 				// print move on STDOUT
 				//System.out.println(createMove(myColor, 0, diceValues.get(0)));
 				System.out.println(move);
-				if(args.length==0) gui.update(board);
+				if(showGUI==0) gui.update(board);
 				myTurn = false;
 			}
 			else {
@@ -145,7 +146,7 @@ public class Main {
 					int pieceId = Integer.parseInt(String.valueOf(str.charAt(1)));
 					int move = Integer.parseInt(String.valueOf(str.charAt(3)));
 					boolean result= board.opponentMove(opponent[pieceId], move);
-					if(args.length==0)gui.update(board);
+					if(showGUI==0) gui.update(board);
 					//System.err.println("opponent " + result);
 					
 				}
@@ -199,10 +200,10 @@ public class Main {
 			p[i] = new Piece(0, c, i);
 		}
 	}
-	private static void initializeGUI(BoardGUI gui){
+	private static void initializeGUI(BoardGUI gui,int pid){
 		JFrame frame=new JFrame();
 		frame.getContentPane().add(gui);
-		frame.setTitle("Ludo board");
+		frame.setTitle("Ludo board for player : "+pid );
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(BoardGUI.MAX_WIDTH+20,BoardGUI.MAX_WIDTH+20);
 		frame.setVisible(true);
