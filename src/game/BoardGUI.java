@@ -269,10 +269,18 @@ public class BoardGUI extends JPanel {
 				}
 			}
 			else {
-				if(i==1 || i == 9) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_red); 
-				else if(i==14 || i==22) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_green);
-				else if(i==27 || i==35) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_yellow);
-				else if(i==40 || i==48) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_blue);
+				/*safeSquares[1] = 9;
+		safeSquares[2] = 14;
+		safeSquares[3] = 22;
+		safeSquares[4] = 27;
+		safeSquares[5] = 35;
+		safeSquares[6] = 40;
+		safeSquares[7] = 48;
+		*/
+				if(i==1 || i == 48) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_red); 
+				else if(i==9 || i==14) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_green);
+				else if(i==22 || i==27) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_yellow);
+				else if(i==35 || i==40) redraw(g, square_locations[i][0], square_locations[i][1], pieces, board_blue);
 				else redraw(g, square_locations[i][0], square_locations[i][1], pieces, Color.white);
 			}
 		}
